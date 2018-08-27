@@ -17,4 +17,20 @@ CHIP DMux4Way {
 
     PARTS:
     // Put your code here:
+
+    // Initialize
+    Not(in=sel[0],out=notSel0);
+    Not(in=sel[1],out=notSel1);
+
+    // Map selections
+    And(a=notSel0,b=notSel1,out=outputA);
+    And(a=sel[0] ,b=notSel1,out=outputB);
+    And(a=notSel0,b=sel[1] ,out=outputC);
+    And(a=sel[0] ,b=sel[1] ,out=outputD);
+
+    // Map outputs
+    And(a=in,b=outputA,out=a);
+    And(a=in,b=outputB,out=b);
+    And(a=in,b=outputC,out=c);
+    And(a=in,b=outputD,out=d);
 }
