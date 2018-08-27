@@ -18,7 +18,7 @@ CHIP DMux {
 
     Not(in=sel,out=notSel);
 
-    // If notSel, -> A
+    // If notSel -> A
     // If sel -> B
 
     And(a=in,b=notSel,out=a);
