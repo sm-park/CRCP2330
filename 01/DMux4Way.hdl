@@ -18,19 +18,10 @@ CHIP DMux4Way {
     PARTS:
     // Put your code here:
 
-    // Initialize
-    Not(in=sel[0],out=notSel0);
-    Not(in=sel[1],out=notSel1);
+    // Split into ab and cd using sel[1] (second bit of sel)
+    DMux(in=in,sel=sel[1],a=ab,b=cd);
 
-    // Map selection
-    And(a=notSel0,b=notSel1,out=outputA);
-    And(a=sel[0] ,b=notSel1,out=outputB);
-    And(a=notSel0,b=sel[1] ,out=outputC);
-    And(a=sel[0] ,b=sel[1] ,out=outputD);
-
-    // Map output
-    And(a=in,b=outputA,out=a);
-    And(a=in,b=outputB,out=b);
-    And(a=in,b=outputC,out=c);
-    And(a=in,b=outputD,out=d);
+    // Split outputs to a,b,c,d
+    DMux(in=ab,sel=sel[0],a=a,b=b);
+    DMux(in=cd,sel=sel[0],a=c,b=d);
 }
