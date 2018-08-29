@@ -16,11 +16,11 @@ CHIP DMux {
     PARTS:
     // Put your code here:
 
+    // Initialize
     Not(in=sel,out=notSel);
 
-    // If notSel -> A
-    // If sel -> B
-
+	// If notSel is 1, out copies A
+	// If sel is 1, out copies B
     And(a=in,b=notSel,out=a);
     And(a=in,b=sel,out=b);
 }

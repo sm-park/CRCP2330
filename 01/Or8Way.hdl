@@ -15,6 +15,8 @@ CHIP Or8Way {
     PARTS:
     // Put your code here:
 
+    // Branch out Or chips
+
     Or(a=in[0],b=in[1],out=orOut1);
     Or(a=in[2],b=in[3],out=orOut2);
     Or(a=in[4],b=in[5],out=orOut3);

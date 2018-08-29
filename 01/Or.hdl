@@ -17,7 +17,7 @@ CHIP Or {
     // Put your code here:
 
     // De Morgan's Law
-    // Not(A) and Not(B) = Not(A or B)
+    // Not(A) x Not(B) = Not(A + B)
 
     Not(in=a,out=notA);
     Not(in=b,out=notB);

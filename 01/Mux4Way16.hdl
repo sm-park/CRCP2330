@@ -18,7 +18,7 @@ CHIP Mux4Way16 {
     PARTS:
     // Put your code here:
 
-    // Decide between A or C, B or D
+    // Decide between A(00) or C(10), B(01) or D(11)
     Mux16(a=a,b=c,sel=sel[1],out=muxOut1);
     Mux16(a=b,b=d,sel=sel[1],out=muxOut2);
 

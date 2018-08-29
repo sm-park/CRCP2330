@@ -15,6 +15,6 @@ CHIP Not {
     PARTS:
     // Put your code here:
 
-    // Feed in to both a and b.
+    // Feed in into both a and b of Nand
     Nand(a=in,b=in,out=out);
 }
