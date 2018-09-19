@@ -14,4 +14,10 @@ CHIP HalfAdder {
 
     PARTS:
     // Put you code here:
+
+    // sum can be resolved with XOR operation
+    // carry can be resolved with AND operation
+
+    Xor(a=a,b=b,out=sum);
+    And(a=a,b=b,out=carry);
 }

@@ -23,5 +23,5 @@ CHIP Mux {
     And(a=b,b=sel,out=andOut2);
 
     // Output toggled bit
-    Xor(a=andOut1,b=andOut2,out=out);
+    Or(a=andOut1,b=andOut2,out=out);
 }
