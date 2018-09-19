@@ -42,5 +42,38 @@ CHIP ALU {
         ng; // 1 if (out < 0),  0 otherwise
 
     PARTS:
-   // Put you code here:
+    // Put you code here:
+
+    // Resolve zx and zy operations.
+    Mux16(a=x,b=false,sel=zx,out=inputX);
+    Mux16(a=y,b=false,sel=zy,out=inputY);
+
+    // Resolve nx and ny operations.
+    Not16(in=inputX,out=negX);
+    Not16(in=inputY,out=negY);
+    Mux16(a=inputX,b=negX,sel=nx,out=finalX);
+    Mux16(a=inputY,b=negY,sel=ny,out=finalY);
+
+    // Compute X + Y and X & Y.
+    Add16(a=finalX,b=finalY,out=addXY);
+    And16(a=finalX,b=finalY,out=andXY);
+
+    // Resolve f operation.
+    Mux16(a=andXY,b=addXY,sel=f,out=outputXY);
+
+    // Resolve no operation.
+    // Resolve ng output using final output left most bit.
+    // Split output into halves for zr output.
+    Not16(in=outputXY,out=negXY);
+    Mux16(a=outputXY,b=negXY,sel=no,out=out,out[0..7]=halfOne,out[8..15]=halfTwo,out[15]=ng);
+
+    // Resolve zr output.
+    // ORing all bits of the output will result in 0
+    // if output is zero. If final result is 0, set
+    // zr to 1, if result is 1, set zr to 0.
+
+    Or8Way(in=halfOne,out=or1);
+    Or8Way(in=halfTwo,out=or2);
+    Or(a=or1,b=or2,out=orXY);
+    Not(in=orXY,out=zr);
 }
