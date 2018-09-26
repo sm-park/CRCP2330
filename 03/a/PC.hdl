@@ -17,4 +17,18 @@ CHIP PC {
 
     PARTS:
     // Put your code here:
+
+    // Handle INC function
+    Inc16(in=feed,out=incremented);
+    Mux16(a=feed,b=incremented,sel=inc,out=mux1);
+
+    // Handle LOAD function
+    Mux16(a=mux1,b=in,sel=load,out=mux2);
+
+    // Handle RESET function
+    Mux16(a=mux2,b=false,sel=reset,out=value);
+
+    // Load intended value into Register
+    // Output to main out and loop back to feed
+    Register(in=value,load=true,out=feed,out=out);
 }
