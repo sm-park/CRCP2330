@@ -15,4 +15,8 @@ CHIP Bit {
 
     PARTS:
     // Put your code here:
+
+    // Use load to determine out[t+1]
+    Mux(a=feed,b=in,sel=load,out=muxOut);
+    DFF(in=muxOut,out=feed,out=out);
 }
