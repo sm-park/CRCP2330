@@ -12,3 +12,68 @@
 // the screen should remain fully clear as long as no key is pressed.
 
 // Put your code here.
+
+//	IF KBD = 0
+//		SIGNAL = 0
+//	ELSE
+//		SIGNAL = -1
+//	
+//	I = 0
+//	IF I < 8K
+//		SCREEN[I] = SIGNAL
+//		I = I + 32
+
+(BEGIN)
+
+	@KBD
+	D=M
+
+	@BLACK
+	D;JNE
+
+	@SIGNAL
+	M=0
+
+	@START
+	0;JMP
+
+(BLACK)
+
+	@SIGNAL
+	M=-1
+
+(START)
+
+	@COUNT
+	M=0
+
+	@SCREEN
+	D=A
+
+	@ADDR
+	M=D
+
+(FILL)
+	
+	@SIGNAL		// RETRIEVE SIGNAL TO SEND
+	D=M 		// TO SCREEN ADDRESS
+
+	@ADDR
+	A=M
+	M=D
+
+	@ADDR 		// CONTINUE TO NEXT PART
+	M=M+1		// OF THE SCREEN
+
+	@COUNT
+	M=M+1
+	D=M
+
+	@8192
+	D=D-A
+
+	@FILL
+	D;JLT
+
+	@BEGIN
+	0;JMP
