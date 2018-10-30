@@ -40,4 +40,50 @@ CHIP CPU {
 
     PARTS:
     // Put your code here:
+
+    // Instruction is either:
+    // A: 0VVV VVVV VVVV VVVV
+    // C: 111A CCCC CCDD DJJJ
+
+    // Use most significant bit to determine whether the ALU output
+    // or the incoming instruction is to be loaded into the A-REG.
+    And(a=instruction[15],b=instruction[5],out=loadALU);
+    Mux16(a=instruction,b=inputA,sel=loadALU,out=inAREG);
+
+    // Load (or do not load) selected value into the A-REG.
+    // If A instruction, always load.
+    // If C instruction, only load if DDD = 1DD.
+    Not(in=instruction[15],out=isA);
+    Or(a=isA,b=loadALU,out=loadA);
+    ARegister(in=inAREG,load=loadA,out=outAREG,out[0..14]=addressM,out=inPC);
+
+    // Select either A or M using the A bit of the C instruction.
+    Mux16(a=outAREG,b=inM,sel=instruction[12],out=AorM);
+
+    // Load correct inputs into the ALU.
+    ALU(x=outD,y=AorM,zx=instruction[11],nx=instruction[10],zy=instruction[9],ny=instruction[8],f=instruction[7],no=instruction[6],out=inputD,out=inputA,out=outM,zr=isZR,ng=isNG);
+
+    // Route ALUout to D-REG.
+    And(a=instruction[15],b=instruction[4],out=loadD);
+    DRegister(in=inputD,load=loadD,out=outD);
+
+    // Route writeM signal.
+    And(a=instruction[15],b=instruction[3],out=writeM);
+
+    // Jump?
+    Or(a=isZR,b=isNG,out=isZRorNG);
+    Not(in=isZRorNG,out=isPS);          // is positive
+
+    And(a=isPS,b=instruction[0],out=J3);
+    And(a=isZR,b=instruction[1],out=J2);
+    And(a=isNG,b=instruction[2],out=J1);
+
+    Or(a=J1,b=J2,out=J1orJ2);
+    Or(a=J1orJ2,b=J3,out=JMP);
+
+    And(a=instruction[15],b=JMP,out=loadPC);
+    Not(in=loadPC,out=incPC);
+
+    // Route PC signals.
+    PC(in=inPC,load=loadPC,inc=incPC,reset=reset,out[0..14]=pc);
 }
