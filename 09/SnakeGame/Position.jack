@@ -1,0 +1,30 @@
+/** Represents a list of X and Y coordinates. */
+class Position {
+	
+	field int x;			//	Position contains two data fields.
+	field int y;			
+	field Position next;	//	Followed by another Position.
+
+	/**	Creates a Position. */
+	constructor Position new (int inX, int inY, Position inNext) {
+		let x = inX;
+		let y = inY;
+		let next = inNext;
+		return this;
+	}
+
+	/** Accessors. */
+	method int getX() {	return x; }
+	method int getY() { return y; }
+	method Position getNext() { return next; }
+
+	/** Disposes by recursively disposing the tail. */
+	method void dispose() {
+		if (~(next = null)) {
+			do next.dispose();
+		}
+		do Memory.deAlloc(this);
+		return;
+	}
+
+}
