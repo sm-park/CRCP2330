@@ -1,0 +1,72 @@
+/**	Implements a 16x16 graphical square. */
+class Square {
+	field int x, y;
+
+	/**	Contructs a new Square with a given location. */
+	constructor Square new(int in_x, int in_y) {
+		let x = in_x;
+		let y = in_y;
+		do draw();
+		return this;
+	}
+
+	/** Dispose this Square. */
+	method void dispose() {
+		do Memory.deAlloc(this);
+		return;
+	}
+
+	/** Draws the Square on the screen. */
+	method void draw() {
+		do Screen.setColor(true);
+		do Screen.drawRectangle(x,y,x+8,y+8);
+		return;
+	}
+
+	/** Erases the Square on the screen. */
+	method void erase() {
+		do Screen.setColor(false);
+		do Screen.drawRectangle(x,y,x+8,y+8);
+		return;
+	}
+
+	/** Moves the Square up by 8 pixels. */
+	method void moveUp() {
+		if(y > 7) {
+			do erase();
+			let y = y - 8;
+			do draw();
+		}
+		return;
+	}
+
+	/** Moves the Square down by 8 pixels. */
+	method void moveDown() {
+		if(y < 240) {
+			do erase();
+			let y = y + 8;
+			do draw();
+		}
+		return;
+	}
+
+	/** Moves the Square left by 8 pixels. */
+	method void moveLeft() {
+		if(x > 7) {
+			do erase();
+			let x = x - 8;
+			do draw();
+		}
+		return;
+	}
+
+	/** Moves the Square right by 8 pixels. */
+	method void moveRight() {
+		if(x < 496) {
+			do erase();
+			let x = x + 8;
+			do draw();
+		}
+		return;
+	}
+}
