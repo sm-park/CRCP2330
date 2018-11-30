@@ -1,0 +1,117 @@
+/** Implements a Snake of squares. */
+
+class Snake {
+	
+	field int size;			//	length of this snake
+	field Position body;	//	X and Y coordinates of snake body
+
+	/** Creates a Snake. */
+	constructor Snake new (int inX, int inY) {
+		let size = 1;
+		let body = Position.new(inX, inY, null);
+		do draw();
+		return this;
+	}
+
+	method void increase () {
+		var Position head;
+		var int currX;
+		var int currY;
+
+		let currX = body.getX();
+		let currY = body.getY();
+		let head = Position.new(currX,currY,body);
+		let body = head;
+
+		let size = size + 1;
+
+		return;
+	}
+
+	/** Increases and moves the snake given an indicated direction. */
+	method void move (int direction) {
+		var int currX;
+		var int currY;
+		var Position head;
+
+		let currX = body.getX();
+		let currY = body.getY();
+
+		if (direction = 1) {
+			if (currY > 7) { let currY = currY - 8; }
+		}
+		if (direction = 2) {
+			if (currY < 240) { let currY = currY + 8; }
+		}
+		if (direction = 3) {
+			if (currX > 7) { let currX = currX - 8; }
+		}
+		if (direction = 4) {
+			if (currX < 496) { let currX = currX + 8; }
+		}
+
+		let head = Position.new(currX,currY,body);
+		let body = head;
+
+		do erase();
+		do draw();
+
+		return;
+	}
+
+	/** Erases the last node of the Snake. */
+	method void erase() {
+		var int currX;
+		var int currY;
+		var Position currNode;
+		var int count;
+
+		let currNode = body;
+		let count = 0;
+
+		while (count < size) {
+			let currNode = currNode.getNext();
+			let count = count + 1;
+		}
+
+		let currX = currNode.getX();
+		let currY = currNode.getY();
+
+		do Screen.setColor(false);
+		do Screen.drawRectangle(currX,currY,currX+8,currY+8);
+
+		return;
+	}
+
+	/** Draws the Snake. */
+	method void draw() {
+		var int count;
+		var int currX;
+		var int currY;
+		var Position currNode;
+
+		let count = 0;
+		let currNode = body;
+
+		while (count < size) {
+			let currX = currNode.getX();
+			let currY = currNode.getY();
+
+			do Screen.setColor(true);
+			do Screen.drawRectangle(currX,currY,currX+8,currY+8);
+
+			let count = count + 1;
+			let currNode = currNode.getNext();
+		}
+
+		return;
+	}
+
+	/** Disposes the Snake. */
+	method void dispose() {
+		do body.dispose();
+		do Memory.deAlloc(this);
+		return;
+	}
+
+}
