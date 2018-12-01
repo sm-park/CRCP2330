@@ -27,10 +27,6 @@ call Snake.new 2
 pop this 1
 push constant 0
 pop this 0
-push constant 256
-push constant 128
-call Star.new 2
-pop this 3
 push pointer 0
 return
 function SnakeGame.dispose 0
@@ -42,6 +38,37 @@ pop temp 0
 push pointer 0
 call Memory.deAlloc 1
 pop temp 0
+push constant 0
+return
+function SnakeGame.spawnStar 2
+push argument 0
+pop pointer 0
+push constant 59
+call Random.randRange 1
+pop local 0
+push constant 28
+call Random.randRange 1
+pop local 1
+push local 0
+push constant 1
+add
+pop local 0
+push local 1
+push constant 1
+add
+pop local 1
+push local 0
+push constant 8
+call Math.multiply 2
+pop local 0
+push local 1
+push constant 8
+call Math.multiply 2
+pop local 1
+push local 0
+push local 1
+call Star.new 2
+pop this 3
 push constant 0
 return
 function SnakeGame.collisionCheck 5
@@ -80,6 +107,9 @@ goto IF_FALSE1
 label IF_TRUE1
 push pointer 0
 call SnakeGame.increaseSnake 1
+pop temp 0
+push pointer 0
+call SnakeGame.spawnStar 1
 pop temp 0
 label IF_FALSE1
 label IF_FALSE0
@@ -190,16 +220,39 @@ call Snake.increase 1
 pop temp 0
 push constant 0
 return
-function SnakeGame.run 1
+function SnakeGame.run 2
 push argument 0
 pop pointer 0
+label WHILE_EXP0
+push local 0
+push constant 0
+eq
+not
+if-goto WHILE_END0
+call Keyboard.keyPressed 0
+pop local 0
+push local 1
+push constant 1
+add
+pop local 1
+push constant 100
+call Sys.wait 1
+pop temp 0
+goto WHILE_EXP0
+label WHILE_END0
+push local 1
+call Random.setSeed 1
+pop temp 0
 push constant 0
 pop this 2
-label WHILE_EXP0
+push pointer 0
+call SnakeGame.spawnStar 1
+pop temp 0
+label WHILE_EXP1
 push this 2
 not
 not
-if-goto WHILE_END0
+if-goto WHILE_END1
 call Keyboard.keyPressed 0
 pop local 0
 push local 0
@@ -251,7 +304,7 @@ label IF_FALSE4
 push pointer 0
 call SnakeGame.moveSnake 1
 pop temp 0
-goto WHILE_EXP0
-label WHILE_END0
+goto WHILE_EXP1
+label WHILE_END1
 push constant 0
 return
