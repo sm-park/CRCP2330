@@ -1,0 +1,42 @@
+/**	STAR CLASS
+	Draws a star graphic. */
+
+class Star {
+	
+	field int x, y;
+
+	/**	Constructs a new Star with a given location. */
+	constructor Star new (int inX, int inY) {
+		let x = inX;
+		let y = inY;
+		do draw();
+		return this;
+	}
+
+	/**	Dispose this Star. */
+	method void dispose () {
+		do Memory.deAlloc(this);
+		return;
+	}
+
+	/** Accessors. */
+	method int getX() { return x; }
+	method int getY() { return y; }
+
+	/** Draws the Star on the screen. */
+	method void draw () {
+		do Screen.setColor(true);
+		do Screen.drawRectangle(x+1,y+1,x+7,y+7);
+		do Screen.setColor(false);
+		do Screen.drawRectangle(x+2,y+2,x+6,y+6);
+		return;
+	}
+
+	/**	Erases the Star on the screen. */
+	method void erase () {
+		do Screen.setColor(false);
+		do Screen.drawRectangle(x+1,y+2,x+7,y+7);
+		return;
+	}
+
+}

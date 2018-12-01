@@ -1,11 +1,20 @@
 class SnakeGame {
-	field Square square;
+
 	field int direction;
 	field Snake snake;
+	field boolean exit;
+	field Star star;
 
 	constructor SnakeGame new() {
+		do Screen.setColor(true);
+		do Screen.drawRectangle(0,0,511,255);
+
+		do Screen.setColor(false);
+		do Screen.drawRectangle(8,8,488,240);
+
 		let snake = Snake.new(32,32);
 		let direction = 0;
+		let star = Star.new(256,128);
 		return this;
 	}
 
@@ -16,10 +25,63 @@ class SnakeGame {
  	    return;
     }
 
-    method void moveSnake() {
-    	if(~(direction = 0)){
-    		do snake.move(direction);
+    /** Checks collision for intended movement. */
+    method void collisionCheck ()
+    {
+    	// Initialization
+    	var int currX;
+    	var int currY;
+    	var Position currPos;
+    	var int currSize;
+    	var int count;
+    	let currX = snake.getX();
+    	let currY = snake.getY();
+    	let currPos = snake.getBody();
+    	let currPos = currPos.getNext();
+    	let currSize = snake.getSize();
+    	let count = 0;
+
+    	// Check if Snake has hit the Star.
+    	if (currX = star.getX())
+    	{
+    		if (currY = star.getY())
+    		{
+    			do increaseSnake();
+    		}
     	}
+
+    	// Check if Snake will collide with self.
+    	while (count < currSize)
+   		{
+   			if (currX = currPos.getX())
+   			{
+   				if (currY = currPos.getY())
+    			{
+    				let exit = true;
+    			}
+    		}
+    		
+    		let currPos = currPos.getNext();
+    		let count = count + 1;
+    	}
+
+    	// Check if Snake has collided with bounds.
+    	if (currX = 0) { let exit = true; }
+    	if (currX = 496) { let exit = true; }
+    	if (currY = 0) { let exit = true; }
+    	if (currY = 240) { let exit = true; }
+
+    	return;
+    }
+
+    method void moveSnake ()
+    {
+    	if (~(direction = 0))
+    	{
+    		do snake.move(direction);
+    		do collisionCheck();
+    	}
+    	do Sys.wait(100);
     	return;
     }
 
@@ -29,28 +91,22 @@ class SnakeGame {
     }
 
 	method void run() {
-		var boolean exit;
 		var char key;
 
 		let exit = false;
 
+
 		while(~exit) {
 
-			while (key = 0) {
-				let key = Keyboard.keyPressed();
-			}
+			let key = Keyboard.keyPressed();
 
-			if (key = 81) { do moveSnake(); }	//	Q
-			if (key = 90) { do increaseSnake(); }
+			if (key = 90) { do increaseSnake(); }	// 	Z
 			if (key = 131) { let direction = 1; }	//  UP
 			if (key = 133) { let direction = 2; }	//	DOWN
 			if (key = 130) { let direction = 3; }	// 	LEFT
 			if (key = 132) { let direction = 4; }	//  RIGHT
 
-			while (~(key = 0)) {
-				let key = Keyboard.keyPressed();
-			}
-
+			do moveSnake();
 		}
 
 		return;

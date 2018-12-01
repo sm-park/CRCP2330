@@ -14,6 +14,32 @@ call Snake.draw 1
 pop temp 0
 push pointer 0
 return
+function Snake.getX 1
+push argument 0
+pop pointer 0
+push this 1
+call Position.getX 1
+pop local 0
+push local 0
+return
+function Snake.getY 1
+push argument 0
+pop pointer 0
+push this 1
+call Position.getY 1
+pop local 0
+push local 0
+return
+function Snake.getBody 0
+push argument 0
+pop pointer 0
+push this 1
+return
+function Snake.getSize 0
+push argument 0
+pop pointer 0
+push this 0
+return
 function Snake.increase 3
 push argument 0
 pop pointer 0

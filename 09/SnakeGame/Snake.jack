@@ -13,6 +13,24 @@ class Snake {
 		return this;
 	}
 
+	/** Accessors. */
+	method int getX () {
+		var int output;
+		let output = body.getX();
+		return output;
+	}
+	method int getY () {
+		var int output;
+		let output = body.getY();
+		return output;
+	}
+	method Position getBody() {
+		return body;
+	}
+	method int getSize() {
+		return size;
+	}
+
 	method void increase () {
 		var Position head;
 		var int currX;
@@ -28,7 +46,7 @@ class Snake {
 		return;
 	}
 
-	/** Increases and moves the snake given an indicated direction. */
+	/** Moves the snake given an indicated direction. */
 	method void move (int direction) {
 		var int currX;
 		var int currY;
