@@ -1,7 +1,26 @@
 import java.io.*;
+import java.util.*;
 
 public class Assembler
 {
+
+	private static ArrayList <String>  symbols;     // Two ArrayLists that contain the symbol table
+	private static ArrayList <Integer> addresses;   // of names and their corresponding addresses.
+
+	private static int currentAddress;              // Address of the next new user-defined symbol.
+	private static int currentLine;                 // Current number of processed command lines. 
+
+	// void addLabel(String input, int lineNum)
+	// ---------------------------------------------
+	// Adds input to symbols with lineNum as the
+	// corresponding address.
+
+	public static void addLabel(String input, int lineNum)
+	{
+		String symbolName = input.substring(1,input.length()-1);
+		symbols.add(symbolName);
+		addresses.add(lineNum);
+	}
 
 	/*	streamLine(String input)
 		------------------------------------------
@@ -29,6 +48,21 @@ public class Assembler
 		return output;
 	}
 
+	public static int searchSymbols(String input)
+	{
+		int output = -1;
+		
+		for(int i = 0; i < symbols.size(); i++)
+		{
+			if(symbols.get(i).equals(input))
+			{
+				output = i;
+			}
+		}
+		
+		return output;
+	}
+
 	/*	instructionA(String input)
 		------------------------------------------
 		Takes an input A instruction and turns it
@@ -38,23 +72,63 @@ public class Assembler
 	{
 		String output = "0";
 		String value = input.substring(1);
-
-		// Translate following value into a binary array of 15.
-
-		int decimal = Integer.parseInt(value);
-
 		int [] binary = new int [15];
 
-		int index = 0;
-		while (decimal > 0)
+		// CASE ONE: VALUE IS NOT A SYMBOL
+		try
 		{
-			binary[index] = decimal % 2;
-			decimal = decimal / 2;
-			index++;
+			int decimal = Integer.parseInt(value);
+			binary = toBinary(decimal);
+		}
+		catch(NumberFormatException e)
+		{
+			// CASE TWO: VALUE IS A PRE-DEFINED SYMBOL
+			     if(value.equals("R0"))     { binary = toBinary(0);     }
+			else if(value.equals("R1"))     { binary = toBinary(1);     }
+			else if(value.equals("R2"))     { binary = toBinary(2);     }
+			else if(value.equals("R3"))     { binary = toBinary(3);     }
+			else if(value.equals("R4"))     { binary = toBinary(4);     }
+			else if(value.equals("R5"))     { binary = toBinary(5);     }
+			else if(value.equals("R6"))     { binary = toBinary(6);     }
+			else if(value.equals("R7"))     { binary = toBinary(7);     }
+			else if(value.equals("R8"))     { binary = toBinary(8);     }
+			else if(value.equals("R9"))     { binary = toBinary(9);     }
+			else if(value.equals("R10"))    { binary = toBinary(10);    }
+			else if(value.equals("R11"))    { binary = toBinary(11);    }
+			else if(value.equals("R12"))    { binary = toBinary(12);    }
+			else if(value.equals("R13"))    { binary = toBinary(13);    }
+			else if(value.equals("R14"))    { binary = toBinary(14);    }
+			else if(value.equals("R15"))    { binary = toBinary(15);    }
+			else if(value.equals("SCREEN")) { binary = toBinary(16384); }
+			else if(value.equals("KEY"))    { binary = toBinary(24576); }
+			else if(value.equals("SP"))     { binary = toBinary(0);     }
+			else if(value.equals("LCL"))    { binary = toBinary(1);     }
+			else if(value.equals("ARG"))    { binary = toBinary(2);     }
+			else if(value.equals("THIS"))   { binary = toBinary(3);     }
+			else if(value.equals("THAT"))   { binary = toBinary(4);     }
+
+			// CASE THREE: USER-DEFINED SYMBOL
+			else
+			{
+				int symIndex = searchSymbols(value);
+
+				// Symbol has not been defined yet.
+				if(symIndex == -1)
+				{
+					symbols.add(value);
+					addresses.add(currentAddress);
+					binary = toBinary(currentAddress);
+					currentAddress++;
+				}
+				// Symbol has been defined
+				else
+				{
+					binary = toBinary(addresses.get(symIndex));
+				}
+			}
 		}
 
 		// Add binary values to output command in reverse order.
-
 		for(int i = 14; i >= 0; i--)
 		{
 			output = output + Integer.toString(binary[i]);
@@ -62,6 +136,27 @@ public class Assembler
 
 		return output;
 	}
+	
+	/*	toBinary(int input)
+		------------------------------------------
+		Takes a decimal input and returns it in
+		binary form.								*/
+
+	public static int[] toBinary(int input)
+	{
+		int [] output = new int [15];
+		int    index  = 0;
+
+		while(input > 0)
+		{
+			output[index] = input % 2;
+			input         = input / 2;
+			index++;
+		}
+
+		return output;
+	}
+
 
 	/*	instructionC(String input)
 		------------------------------------------
@@ -222,6 +317,46 @@ public class Assembler
 		String fileName = args[0];
 		String line = null;
 
+		currentLine 	= 0;
+		currentAddress  = 16;
+
+		symbols = new ArrayList <String> ();
+		addresses = new ArrayList <Integer> ();
+
+		try
+		{
+			FileReader     iniFileReader     = new FileReader(fileName);
+			BufferedReader iniBufferedReader = new BufferedReader(iniFileReader);
+			BufferedWriter iniBufferedWriter = new BufferedWriter(new FileWriter("test.hack"));
+
+			while((line = iniBufferedReader.readLine()) != null)
+			{
+				String commandLine = streamLine(line);
+
+				if(!(commandLine.equals("")))
+				{
+					if(commandLine.charAt(0) == '(')
+					{
+						addLabel(commandLine,currentLine);
+					}
+					else
+					{
+						currentLine++;
+					}
+				}
+			}
+
+			iniBufferedReader.close();
+		}
+		catch(FileNotFoundException ex)
+		{
+			System.out.println("Unable to open file.");
+		}
+		catch(IOException ex)
+		{
+			System.out.println("Error reading file.");
+		}
+
 		try
 		{
 			FileReader fileReader = new FileReader(fileName);
@@ -235,14 +370,16 @@ public class Assembler
 				String command = streamLine(line);
 
 				// If command is not empty
-				if(!(command.equals("")))
+				if(!(command.equals("")) && command.charAt(0) != '(')
 				{
 					if(command.charAt(0) == '@')
 					{
+						currentLine++;
 						command = instructionA(command);
 					}
 					else
 					{
+						currentLine++;
 						command = instructionC(command);
 					}
 					writer.write(command);
