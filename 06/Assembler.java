@@ -4,15 +4,16 @@ import java.util.*;
 public class Assembler
 {
 
-	private static ArrayList <String>  symbols;
-	private static ArrayList <Integer> addresses;
-	private static int 				currentAddress;
-	private static int 				currentLine;
+	private static ArrayList <String>  symbols;     // Two ArrayLists that contain the symbol table
+	private static ArrayList <Integer> addresses;   // of names and their corresponding addresses.
 
-	/*	addLabel(String input, int lineNum)
-		------------------------------------------
-		Adds a label and line combination to
-		symbols and addresses.						*/
+	private static int currentAddress;              // Address of the next new user-defined symbol.
+	private static int currentLine;                 // Current number of processed command lines. 
+
+	// void addLabel(String input, int lineNum)
+	// ---------------------------------------------
+	// Adds input to symbols with lineNum as the
+	// corresponding address.
 
 	public static void addLabel(String input, int lineNum)
 	{
@@ -50,16 +51,15 @@ public class Assembler
 	public static int searchSymbols(String input)
 	{
 		int output = -1;
-		if(symbols.size() < 1)
+		
+		for(int i = 0; i < symbols.size(); i++)
 		{
-			for(int i = 0; i < symbols.size(); i++)
+			if(symbols.get(i).equals(input))
 			{
-				if(symbols.get(i).equals(input))
-				{
-					output = i;
-				}
+				output = i;
 			}
 		}
+		
 		return output;
 	}
 
@@ -325,6 +325,40 @@ public class Assembler
 
 		try
 		{
+			FileReader     iniFileReader     = new FileReader(fileName);
+			BufferedReader iniBufferedReader = new BufferedReader(iniFileReader);
+			BufferedWriter iniBufferedWriter = new BufferedWriter(new FileWriter("test.hack"));
+
+			while((line = iniBufferedReader.readLine()) != null)
+			{
+				String commandLine = streamLine(line);
+
+				if(!(commandLine.equals("")))
+				{
+					if(commandLine.charAt(0) == '(')
+					{
+						addLabel(commandLine,currentLine);
+					}
+					else
+					{
+						currentLine++;
+					}
+				}
+			}
+
+			iniBufferedReader.close();
+		}
+		catch(FileNotFoundException ex)
+		{
+			System.out.println("Unable to open file.");
+		}
+		catch(IOException ex)
+		{
+			System.out.println("Error reading file.");
+		}
+
+		try
+		{
 			FileReader fileReader = new FileReader(fileName);
 			BufferedReader bufferedReader = new BufferedReader(fileReader);
 
@@ -336,16 +370,12 @@ public class Assembler
 				String command = streamLine(line);
 
 				// If command is not empty
-				if(!(command.equals("")))
+				if(!(command.equals("")) && command.charAt(0) != '(')
 				{
 					if(command.charAt(0) == '@')
 					{
 						currentLine++;
 						command = instructionA(command);
-					}
-					else if(command.charAt(0) == '(')
-					{
-						addLabel(command, currentLine);
 					}
 					else
 					{
